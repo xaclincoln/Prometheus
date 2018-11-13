@@ -115,6 +115,18 @@ namespace App.Metrics.Formatters.Prometheus.Internal.Extensions
                     }
 
                     result.Add(promMetricFamily);
+
+                    var promMetricsGaugeFamily = new MetricFamily
+                                    {
+                                        name = metricNameFormatter(group.Context, $"{metricGroup.Key}_time"),
+                                        type = MetricType.GAUGE
+                                    };
+                    foreach (var timer in metricGroup)
+                    {
+                        promMetricsGaugeFamily.metric.AddRange(timer.ToPrometheusGaugeMetrics());
+                    }
+
+                    result.Add(promMetricsGaugeFamily);
                 }
             }
 

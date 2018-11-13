@@ -120,6 +120,23 @@ namespace App.Metrics.Formatters.Prometheus.Internal.Extensions
             return result;
         }
 
+        public static IEnumerable<Metric> ToPrometheusGaugeMetrics(this TimerValueSource metric)
+        {
+            var rescaledVal = metric.Value.Scale(TimeUnit.Seconds, TimeUnit.Seconds);
+            var result = new List<Metric>
+            {
+                new Metric
+                {
+                    gauge = new Gauge()
+                    {
+                        value = rescaledVal.Histogram.LastValue
+                    },
+                    label = metric.Tags.ToLabelPairs()
+                }
+            };
+            return result;
+        }
+
         public static IEnumerable<Metric> ToPrometheusMetrics(this TimerValueSource metric)
         {
             // Prometheus advocates always using seconds as a base unit for time
